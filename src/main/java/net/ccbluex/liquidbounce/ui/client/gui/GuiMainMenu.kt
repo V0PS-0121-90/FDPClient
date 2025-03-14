@@ -165,6 +165,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             mc.displayGuiScreen(ClickGui)
         }
         GlStateManager.pushMatrix()
+        // Removed drawShadowRect to eliminate the shader-like overlay
+        /*
         drawShadowRect(
             (width / 2 - 100).toFloat(),
             (height / 2 - 80).toFloat(),
@@ -173,6 +175,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             15F,
             Color(44, 43, 43, 100).rgb
         )
+        */
 
         GlStateManager.disableAlpha()
         GlStateManager.enableAlpha()
