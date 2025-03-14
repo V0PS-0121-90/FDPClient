@@ -1,36 +1,41 @@
-name: build
+name: Build FDPClient
 
+# Triggers the workflow on push or pull request to the main branch
 on:
-  - push
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
+# Defines a single build job
 jobs:
   build:
+    # Runs on an Ubuntu runner (free and widely used)
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+    # Step 1: Check out the repository code
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Java setup
-        uses: actions/setup-java@v4
-        with:
-          distribution: "zulu"
-          java-version: 8
-          cache: "gradle"
+    # Step 2: Set up JDK 8 (FDPClient requires Java 8)
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'temurin' # Eclipse Temurin OpenJDK distribution
 
-      - name: Set outputs
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+    # Step 3: Grant execute permission to Gradle wrapper (needed for Linux)
+    - name: Grant Execute Permission for Gradlew
+      run: chmod +x gradlew
 
-      - name: Build
-        run: chmod +x ./gradlew && ./gradlew setupCiWorkspace && ./gradlew build
+    # Step 4: Build the project with Gradle
+    - name: Build with Gradle
+      run: ./gradlew build
 
-      - name: Rename build artifacts
-        run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build.jar
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: FDPClient
-          path: build/libs/FDPClient-build.jar
+    # Step 5: Upload the built .jar as an artifact
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: FDPClient-Build
+        path: build/libs/*.jar
