@@ -1,0 +1,41 @@
+name: Gradle Build for FDPClient
+
+# Triggers the workflow on push or pull request to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# Defines the build job
+jobs:
+  build:
+    # Runs on an Ubuntu runner
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the repository code
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # Step 2: Set up JDK 8 (FDPClient requires Java 8 for Minecraft 1.8.9)
+    - name: Set up JDK 8
+      uses: actions/setup-java@v4
+      with:
+        java-version: '8'
+        distribution: 'temurin' # Uses Eclipse Temurin OpenJDK
+
+    # Step 3: Make Gradle wrapper executable (necessary for Linux runners)
+    - name: Grant Execute Permission for Gradle Wrapper
+      run: chmod +x gradlew
+
+    # Step 4: Build the project with Gradle
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    # Step 5: Upload the built .jar as an artifact
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: FDPClient-Jar
+        path: build/libs/*.jar
